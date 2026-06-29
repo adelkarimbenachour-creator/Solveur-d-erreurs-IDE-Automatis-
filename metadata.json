@@ -1,0 +1,6 @@
+{
+  "name": "Solveur d'Erreurs IDE",
+  "description": "Système intelligent de capture et de résolution d'erreurs de code en temps réel avec un coordinateur de flux de travail et un exécuteur Gemini.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

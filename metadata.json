@@ -1,6 +1,6 @@
 {
   "name": "Solveur d'Erreurs IDE",
-  "description": "Système intelligent de capture et de résolution d'erreurs de code en temps réel avec un coordinateur de flux de travail et un exécuteur Gemini.",
+  "description": "Portfolio haut de gamme et hautement interactif d'un développeur Full Stack d'élite, avec des animations fluides, un terminal interactif, et un design moderne.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
 }

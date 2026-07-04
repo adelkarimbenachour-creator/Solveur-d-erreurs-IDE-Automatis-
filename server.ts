@@ -174,6 +174,148 @@ Donne-moi l'analyse de l'erreur et la correction de code complète en respectant
     }
   });
 
+  // --- NEW PORTFOLIO API ENDPOINTS ---
+
+  // Endpoint 1: Chat with Alex's AI Clone
+  app.post('/api/chat-clone', async (req, res) => {
+    const { message, history } = req.body;
+    if (!message) {
+      return res.status(400).json({ error: "Message manquant" });
+    }
+
+    addLog('info', `💬 Message clone IA d'Alex Mercer : "${message.substring(0, 45)}..."`);
+
+    if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === "MY_GEMINI_API_KEY") {
+      // High-quality simulated response when no API key is present
+      return res.json({
+        reply: "Bonjour ! Je suis ravi de faire votre connaissance. Je suis Alex Mercer, un architecte logiciel Full-Stack d'élite. 🚀\n\nPour me poser des questions complexes, configurer ma personnalité complète et débloquer toute la puissance cognitive de Gemini 3.5, veuillez configurer votre 'GEMINI_API_KEY' dans les Secrets d'AI Studio.\n\nEn attendant, je peux vous dire que je suis spécialisé dans la création d'architectures cloud scalables, de backends ultra-performants en Go/Node, et d'interfaces réactives haut de gamme en React/Tailwind. Je facture généralement un tarif journalier moyen (TJM) d'environ 800€ à 1000€ (ou 120€/h) pour les mandats de conseil ou de développement de pointe. Que puis-je vous présenter aujourd'hui ?"
+      });
+    }
+
+    try {
+      const systemInstruction = `Tu es l'intelligence artificielle de clone virtuel d'Alex Mercer (développeur Full Stack Elite & Solutions Architect). Tu réponds en français de manière professionnelle, charismatique et pragmatique.
+Tu as 8+ ans d'expérience, expert en :
+- Frontend : React, Next.js, Framer Motion, Tailwind CSS, Three.js, web performance.
+- Backend : Node.js (NestJS, Express), Python (FastAPI), Go, GraphQL, microservices.
+- DBs : PostgreSQL, MongoDB, Redis, vector databases.
+- DevOps : Docker, Kubernetes, AWS, Terraform, CI/CD.
+- AI : Pipelines RAG, intégration de modèles de langage (LLMs), agentic workflows.
+
+Ton style est direct, amical, élégant et axé sur la valeur business et la propreté du code. Si on te demande tes tarifs, tu vaux environ 120€/h en freelance ou des forfaits sur-mesure pour les plateformes SaaS/IA.
+Donne des conseils avisés et cite des exemples de patterns techniques lorsque pertinent.`;
+
+      const contents = [];
+      if (history && Array.isArray(history)) {
+        history.forEach((msg: any) => {
+          contents.push({
+            role: msg.sender === 'user' ? 'user' : 'model',
+            parts: [{ text: msg.text }]
+          });
+        });
+      }
+      contents.push({ role: 'user', parts: [{ text: message }] });
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3.5-flash",
+        contents,
+        config: {
+          systemInstruction,
+          temperature: 0.7,
+        }
+      });
+
+      const reply = response.text || "Désolé, je n'ai pas pu formuler de réponse pour le moment.";
+      addLog('success', "✨ Réponse générée par le clone IA.");
+      res.json({ reply });
+    } catch (err: any) {
+      addLog('error', `Échec Chat Clone Gemini : ${err.message || err}`);
+      res.status(500).json({ error: `Erreur d'appel Gemini : ${err.message}` });
+    }
+  });
+
+  // Endpoint 2: AI Solution & Budget Estimator for potential clients
+  app.post('/api/project-estimate', async (req, res) => {
+    const { config } = req.body;
+    if (!config) {
+      return res.status(400).json({ error: "Configuration manquante" });
+    }
+
+    addLog('info', `📊 Calcul d'estimation d'architecture pour projet : "${config.type}"`);
+
+    if (!process.env.GEMINI_API_KEY || process.env.GEMINI_API_KEY === "MY_GEMINI_API_KEY") {
+      // High-quality fallback proposal when API key is missing
+      return res.json({
+        estimate: {
+          architecture: "Architecture Serverless Moderne :\n- Frontend : Single Page Application React (Vite/Tailwind) déployée sur Vercel Edge CDN\n- Backend : API REST Node.js Express hébergée sur conteneurs AWS Fargate scalables\n- Base de données : PostgreSQL managé (Supabase) avec clustering d'indexation et cache Redis",
+          phases: [
+            { name: "Spécifications & Maquettes UI/UX", hours: 40, description: "Cadrage fonctionnel complet, schématisation de base de données, prototypes Figma interactifs." },
+            { name: "Développement Frontend & Éléments Réactifs", hours: 120, description: "Intégration responsive haute définition, animations de fluidité Framer Motion." },
+            { name: "Développement API & Services Cloud", hours: 140, description: "Logique métier, passerelle de paiement Stripe, authentification JWT sécurisée." },
+            { name: "Recette, QA, CI/CD & Déploiement", hours: 40, description: "Pipeline automatisé GitHub Actions, tests unitaires, basculement en production." }
+          ],
+          totalHours: 340,
+          totalCost: 40800,
+          thirdPartyCosts: "Environ 50$ à 150$/mois pour l'infrastructure Cloud managée.",
+          roadmap: [
+            "Semaine 1-2 : Spécifications, schémas DB et maquettage interactif",
+            "Semaine 3-6 : Développement des modules critiques (Auth, Core Logic, Frontend)",
+            "Semaine 7-8 : Intégrations de paiements, audit de sécurité et lancement en production"
+          ],
+          summary: "Cette estimation haut de gamme garantit un code ultra-propre, documenté et d'une évolutivité totale pour l'avenir."
+        }
+      });
+    }
+
+    try {
+      const systemInstruction = `Tu es un architecte logiciel principal d'élite et directeur technique (CTO). Ton but est d'analyser les spécifications de projet de l'utilisateur et de générer une proposition d'architecture technique et d'estimation financière d'une précision chirurgicale.
+Tu dois répondre STRICTEMENT avec un objet JSON respectant exactement le format ci-dessous. Ne mets aucune phrase d'introduction ni de conclusion, uniquement l'objet JSON valide :
+
+{
+  "architecture": "Explication claire de l'architecture serveur et client préconisée (paragraphe)",
+  "phases": [
+    { "name": "Nom de la phase", "hours": 80, "description": "Détail de ce qui est accompli (court)" }
+  ],
+  "totalHours": 320,
+  "totalCost": 38400,
+  "thirdPartyCosts": "Estimation des coûts récurrents d'infrastructure (hébergement, APIs, bases de données)",
+  "roadmap": [
+    "Étape 1 : Libellé de l'étape",
+    "Étape 2 : Libellé de l'étape"
+  ],
+  "summary": "Résumé de la valeur ajoutée et des recommandations clés (court)"
+}`;
+
+      const userPrompt = `Voici les spécifications sélectionnées par mon client :
+- Type de projet : ${config.type}
+- Plateformes ciblées : ${config.platforms.join(', ')}
+- Technologies souhaitées : ${config.stack.join(', ')}
+- Fonctionnalités requises : ${config.features.join(', ')}
+- Calendrier de livraison : ${config.timeline}
+- Complexité générale estimée : ${config.complexity}
+
+Génère une proposition technique d'architecture et de budget correspondante au taux standard d'Alex Mercer (120€/heure).`;
+
+      const response = await ai.models.generateContent({
+        model: "gemini-3.5-flash",
+        contents: userPrompt,
+        config: {
+          systemInstruction,
+          temperature: 0.2,
+          responseMimeType: "application/json"
+        }
+      });
+
+      const rawJson = response.text || "{}";
+      const result = JSON.parse(rawJson);
+
+      addLog('success', "✨ Estimation financière et technique calculée avec succès !");
+      res.json({ estimate: result });
+    } catch (err: any) {
+      addLog('error', `Échec Estimation Projet : ${err.message || err}`);
+      res.status(500).json({ error: `Erreur d'évaluation : ${err.message}` });
+    }
+  });
+
   // Vite development middleware or static production serving
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({

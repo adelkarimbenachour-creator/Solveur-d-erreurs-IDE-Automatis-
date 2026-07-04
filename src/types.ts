@@ -19,3 +19,28 @@ export interface SetupFile {
   description: string;
   code: string;
 }
+
+export interface Message {
+  sender: 'user' | 'ai';
+  text: string;
+  timestamp: string;
+}
+
+export interface ProjectConfig {
+  type: string;
+  platforms: string[];
+  stack: string[];
+  features: string[];
+  timeline: string;
+  complexity: 'simple' | 'medium' | 'complex' | 'enterprise';
+}
+
+export interface EstimateResult {
+  architecture: string;
+  phases: Array<{ name: string; hours: number; description: string }>;
+  totalHours: number;
+  totalCost: number;
+  thirdPartyCosts: string;
+  roadmap: string[];
+  summary: string;
+}
